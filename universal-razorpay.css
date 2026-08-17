@@ -1,0 +1,255 @@
+/* Universal Razorpay SDK - isolated UI styles */
+
+.urpay-root,
+.urpay-root * {
+  box-sizing: border-box;
+}
+
+.urpay-root {
+  --urpay-bg: #ffffff;
+  --urpay-text: #111827;
+  --urpay-muted: #6b7280;
+  --urpay-border: #e5e7eb;
+  --urpay-primary: #111827;
+  --urpay-success: #15803d;
+  --urpay-danger: #b91c1c;
+  --urpay-shadow: 0 24px 80px rgba(0,0,0,.18);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.urpay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .56);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .18s ease, visibility .18s ease;
+}
+
+.urpay-backdrop.urpay-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.urpay-modal {
+  width: min(100%, 430px);
+  max-height: min(760px, calc(100vh - 40px));
+  overflow: auto;
+  border: 1px solid var(--urpay-border);
+  border-radius: 22px;
+  background: var(--urpay-bg);
+  color: var(--urpay-text);
+  box-shadow: var(--urpay-shadow);
+  transform: translateY(10px) scale(.985);
+  transition: transform .18s ease;
+}
+
+.urpay-open .urpay-modal {
+  transform: translateY(0) scale(1);
+}
+
+.urpay-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 22px 22px 14px;
+}
+
+.urpay-title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 750;
+  letter-spacing: -.02em;
+}
+
+.urpay-subtitle {
+  margin: 6px 0 0;
+  color: var(--urpay-muted);
+  font-size: 13px;
+}
+
+.urpay-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #374151;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.urpay-close:hover {
+  background: #e5e7eb;
+}
+
+.urpay-body {
+  padding: 8px 22px 22px;
+}
+
+.urpay-amount {
+  margin: 8px 0 18px;
+  padding: 18px;
+  border: 1px solid var(--urpay-border);
+  border-radius: 16px;
+  background: #fafafa;
+  text-align: center;
+}
+
+.urpay-amount-label {
+  color: var(--urpay-muted);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.urpay-amount-value {
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -.035em;
+}
+
+.urpay-order {
+  margin: 14px 0;
+  color: var(--urpay-muted);
+  font-size: 12px;
+  text-align: center;
+  word-break: break-word;
+}
+
+.urpay-action {
+  width: 100%;
+  min-height: 50px;
+  border: 0;
+  border-radius: 13px;
+  padding: 13px 18px;
+  background: var(--urpay-primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.urpay-action:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.urpay-secondary {
+  margin-top: 10px;
+  width: 100%;
+  border: 1px solid var(--urpay-border);
+  border-radius: 13px;
+  padding: 11px 16px;
+  background: #fff;
+  color: var(--urpay-text);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.urpay-status {
+  display: none;
+  padding: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.urpay-status.urpay-visible {
+  display: block;
+}
+
+.urpay-status.success {
+  color: var(--urpay-success);
+}
+
+.urpay-status.error {
+  color: var(--urpay-danger);
+}
+
+.urpay-status.info {
+  color: var(--urpay-muted);
+}
+
+.urpay-spinner {
+  width: 18px;
+  height: 18px;
+  margin: 0 auto 9px;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: urpay-spin .7s linear infinite;
+}
+
+@keyframes urpay-spin {
+  to { transform: rotate(360deg); }
+}
+
+.urpay-success-icon,
+.urpay-error-icon {
+  width: 62px;
+  height: 62px;
+  margin: 4px auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.urpay-success-icon {
+  background: #dcfce7;
+  color: var(--urpay-success);
+}
+
+.urpay-error-icon {
+  background: #fee2e2;
+  color: var(--urpay-danger);
+}
+
+@media (max-width: 480px) {
+  .urpay-backdrop {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .urpay-modal {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+    border-radius: 20px;
+  }
+
+  .urpay-header {
+    padding: 18px 18px 12px;
+  }
+
+  .urpay-body {
+    padding: 8px 18px 18px;
+  }
+
+  .urpay-amount-value {
+    font-size: 29px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .urpay-backdrop,
+  .urpay-modal {
+    transition: none;
+  }
+
+  .urpay-spinner {
+    animation: none;
+  }
+}
