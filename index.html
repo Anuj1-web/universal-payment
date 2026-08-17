@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Universal Razorpay Frontend — Demo</title>
+
+  <link rel="stylesheet" href="universal-razorpay.css">
+
+  <script src="universal-razorpay-config.js"></script>
+  <script src="universal-razorpay.js"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, system-ui, sans-serif;
+      background: #09090b;
+      color: #f4f4f5;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(59,130,246,.16), transparent 32%),
+        radial-gradient(circle at 85% 75%, rgba(168,85,247,.13), transparent 30%),
+        #09090b;
+    }
+
+    .demo {
+      width: min(100%, 720px);
+      padding: 34px;
+      border: 1px solid #27272a;
+      border-radius: 26px;
+      background: rgba(24,24,27,.82);
+      box-shadow: 0 30px 100px rgba(0,0,0,.35);
+    }
+
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 5vw, 44px); }
+    p { color: #a1a1aa; line-height: 1.6; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: #d4d4d8;
+      font-size: 13px;
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid #3f3f46;
+      border-radius: 11px;
+      background: #18181b;
+      color: #fff;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #71717a;
+    }
+
+    button {
+      width: 100%;
+      min-height: 50px;
+      border: 0;
+      border-radius: 12px;
+      background: #fff;
+      color: #111827;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .log {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 13px;
+      background: #09090b;
+      border: 1px solid #27272a;
+      color: #a1a1aa;
+      font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    @media(max-width:600px) {
+      .demo { padding: 22px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="demo">
+    <h1>Universal Razorpay</h1>
+    <p>
+      Standalone frontend test page. This version runs in mock mode, so
+      no real money is charged and no Supabase backend is required yet.
+    </p>
+
+    <div class="grid">
+      <label>
+        Amount
+        <input id="amount" type="number" min="1" step="0.01" value="499">
+      </label>
+
+      <label>
+        Order ID
+        <input id="orderId" type="text" value="DEMO-1001">
+      </label>
+
+      <label>
+        Customer name
+        <input id="customerName" type="text" value="Demo Customer">
+      </label>
+
+      <label>
+        Email
+        <input id="customerEmail" type="email" value="customer@example.com">
+      </label>
+    </div>
+
+    <button id="payButton" type="button">Pay ₹499</button>
+
+    <div id="log" class="log">Ready.</div>
+  </main>
+
+  <script>
+    UniversalRazorpay.init({
+      mode: "mock",
+      currency: "INR"
+    });
+
+    const amount = document.getElementById("amount");
+    const orderId = document.getElementById("orderId");
+    const customerName = document.getElementById("customerName");
+    const customerEmail = document.getElementById("customerEmail");
+    const payButton = document.getElementById("payButton");
+    const log = document.getElementById("log");
+
+    function writeLog(title, data) {
+      log.textContent =
+        title + "\n" +
+        (data ? JSON.stringify(data, null, 2) : "");
+    }
+
+    amount.addEventListener("input", function () {
+      const value = Number(amount.value || 0);
+      payButton.textContent =
+        "Pay " +
+        new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR"
+        }).format(value);
+    });
+
+    payButton.addEventListener("click", async function () {
+      try {
+        writeLog("Starting payment…");
+
+        await UniversalRazorpay.pay({
+          amount: () => Number(amount.value),
+          orderId: () => orderId.value.trim(),
+          customer: () => ({
+            name: customerName.value.trim(),
+            email: customerEmail.value.trim()
+          }),
+          description: "Universal Razorpay Demo",
+          brandName: "Universal Razorpay Demo",
+          items: () => [
+            {
+              id: "DEMO-ITEM",
+              name: "Demo Item",
+              quantity: 1,
+              price: Number(amount.value)
+            }
+          ],
+          metadata: {
+            source: "universal-razorpay-demo"
+          },
+          onSuccess: function (result) {
+            writeLog("SUCCESS", result);
+          },
+          onFailure: function (result) {
+            writeLog("FAILED", result);
+          },
+          onCancel: function (result) {
+            writeLog("CANCELLED", result);
+          },
+          onCheckoutOpened: function (result) {
+            writeLog("CHECKOUT OPENED", result);
+          }
+        });
+      } catch (error) {
+        writeLog("START ERROR", {
+          message: error.message
+        });
+      }
+    });
+
+    UniversalRazorpay.on("state", function (event) {
+      console.log("[UniversalRazorpay]", event);
+    });
+
+    UniversalRazorpay.on("order_created", function (event) {
+      console.log("[UniversalRazorpay] order_created", event);
+    });
+  </script>
+</body>
+</html>
